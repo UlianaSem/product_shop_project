@@ -41,15 +41,25 @@ class Dimension(models.Model):
         verbose_name_plural = "размеры изображения"
 
 
+class Picture(models.Model):
+    dimensions = models.ManyToManyField(Dimension, verbose_name="размер изображения")
+    picture = models.ImageField(upload_to='product/', verbose_name="изображение")
+
+    def __str__(self):
+        return f'{self.picture}'
+
+    class Meta:
+        verbose_name = "изображение"
+        verbose_name_plural = "изображения"
+
+
 class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, verbose_name="подкатегория")
+    picture = models.ForeignKey(Picture, on_delete=models.SET_DEFAULT, verbose_name="изображение", default=1)
 
     name = models.CharField(max_length=255, unique=True, verbose_name="наименование")
     slug_name = models.SlugField(max_length=255, unique=True, verbose_name="slug-имя")
-    picture = models.ImageField(upload_to='product/', verbose_name="изображение", height_field="dimensions.height", width_field="dimensions.width")
     price = models.PositiveIntegerField(verbose_name="цена")
-
-    dimensions = models.ManyToManyField(Dimension, verbose_name="размер изображения")
 
     def __str__(self):
         return self.name
