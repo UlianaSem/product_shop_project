@@ -4,6 +4,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from basket.models import Basket
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -19,6 +21,9 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
+
+        Basket.objects.create(user=user)
+
         return user
 
     def create_user(self, email, password=None, **extra_fields):
